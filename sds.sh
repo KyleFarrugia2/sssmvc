@@ -1,7 +1,4 @@
-#!/bin/bash
 
-# Script to update .env file for MySQL
-# Run this AFTER you've set up MySQL user and database
 
 if [ ! -f .env ]; then
     echo "Error: .env file not found!"
@@ -10,10 +7,9 @@ fi
 
 echo "Updating .env file for MySQL..."
 
-# Backup .env
+
 cp .env .env.backup
 
-# Update database settings
 sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
 sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
 sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
