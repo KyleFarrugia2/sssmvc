@@ -256,3 +256,4 @@ echo "Meal Plans: " . MealPlan::count() . "\n";
 echo "Meal Entries: " . MealEntry::count() . "\n";
 echo "\nDone! Data seeded successfully.\n";
 
+

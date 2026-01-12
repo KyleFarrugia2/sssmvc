@@ -34,3 +34,4 @@ To demonstrate independent research, I integrated OpenFoodFacts (free, no key) v
 - Re-run `php artisan migrate --seed`, then manual QA of filters/sorts and API validation.
 
 
+

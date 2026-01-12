@@ -63,9 +63,27 @@
         </button>
         <div class="collapse navbar-collapse" id="navMenu">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('meal-plans.*') ? 'active' : '' }}" href="{{ route('meal-plans.index') }}">Meal Plans</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('foods.*') ? 'active' : '' }}" href="{{ route('foods.index') }}">Foods</a></li>
-                <li class="nav-item"><a class="nav-link {{ request()->routeIs('calorie-calculator.*') ? 'active' : '' }}" href="{{ route('calorie-calculator.index') }}"><i class="bi bi-calculator"></i> Calculator</a></li>
+                @auth
+                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('meal-plans.*') ? 'active' : '' }}" href="{{ route('meal-plans.index') }}">Meal Plans</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('foods.*') ? 'active' : '' }}" href="{{ route('foods.index') }}">Foods</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('calorie-calculator.*') ? 'active' : '' }}" href="{{ route('calorie-calculator.index') }}"><i class="bi bi-calculator"></i> Calculator</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ Auth::user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                @else
+                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}" href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right"></i> Login</a></li>
+                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('register') ? 'active' : '' }}" href="{{ route('register') }}"><i class="bi bi-person-plus"></i> Register</a></li>
+                @endauth
             </ul>
         </div>
     </div>
@@ -86,5 +104,3 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-

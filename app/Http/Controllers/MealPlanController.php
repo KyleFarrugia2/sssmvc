@@ -29,12 +29,9 @@ class MealPlanController extends Controller
             ->paginate(6)
             ->withQueryString();
 
-        $clients = \App\Models\User::whereHas('mealPlans')->orderBy('name')->pluck('name', 'id');
-
         return view('meal_plans.index', [
             'plans' => $plans,
             'filters' => $filters,
-            'clients' => $clients,
         ]);
     }
 
@@ -100,10 +97,11 @@ class MealPlanController extends Controller
 
     private function resolveUser(MealPlanRequest $request): User
     {
+        $data = $request->validated();
         return User::updateOrCreate(
-            ['email' => $request->validated('owner_email')],
+            ['email' => $data['owner_email']],
             [
-                'name' => $request->validated('owner_name'),
+                'name' => $data['owner_name'],
                 'password' => Hash::make('password'),
             ]
         );
