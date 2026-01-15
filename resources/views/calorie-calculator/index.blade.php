@@ -113,6 +113,27 @@
                 </form>
             </div>
             
+            {{-- 
+                HOW THE CALCULATOR WORKS:
+                =========================
+                
+                1. BMR CALCULATION (Basal Metabolic Rate):
+                   - Uses Mifflin-St Jeor equation
+                   - Calculates calories needed at complete rest
+                   - Different formula for male vs female
+                
+                2. TDEE CALCULATION (Total Daily Energy Expenditure):
+                   - BMR × Activity Multiplier = TDEE
+                   - Activity multipliers: 1.2 (sedentary) to 1.9 (very active)
+                   - This gives you maintenance calories
+                
+                3. RECOMMENDATIONS:
+                   - Weight Loss: TDEE - 500 cal (shown in result page)
+                   - Maintenance: TDEE (shown in result page)
+                   - Weight Gain: TDEE + 500 cal (shown in result page)
+                
+                The 500 calorie rule creates ~0.5 kg/week weight change (safe and sustainable).
+            --}}
             <div class="glass-card p-4">
                 <h2 class="h6 mb-3"><i class="bi bi-info-circle"></i> How It Works</h2>
                 <p class="small text-secondary mb-2">
@@ -123,6 +144,7 @@
                 <ul class="small text-secondary mb-0">
                     <li><strong>BMR:</strong> Calories needed at complete rest</li>
                     <li><strong>TDEE:</strong> Calories needed with your activity level (maintenance calories)</li>
+                    <li><strong>Recommendations:</strong> Based on TDEE ± 500 calories for weight goals</li>
                 </ul>
             </div>
         </div>

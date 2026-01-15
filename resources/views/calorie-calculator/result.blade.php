@@ -50,9 +50,36 @@
                 </div>
             </div>
             
+            {{-- 
+                WEIGHT GOAL RECOMMENDATIONS
+                ==========================
+                
+                HOW RECOMMENDATIONS WORK:
+                1. Controller calculates TDEE (Total Daily Energy Expenditure) - maintenance calories
+                2. Recommendations are calculated directly in this view using simple math:
+                   - Weight Loss: TDEE - 500 calories (creates 500 cal deficit per day)
+                   - Maintenance: TDEE (no change)
+                   - Weight Gain: TDEE + 500 calories (creates 500 cal surplus per day)
+                
+                3. The 500 calorie rule:
+                   - 500 calories/day = ~3500 calories/week
+                   - 3500 calories ≈ 0.5 kg (1 lb) of body weight
+                   - This creates safe, sustainable weight change (~0.5 kg/week)
+                
+                4. Calculations are done inline in Blade template:
+                   - {{ $tdee - 500 }} for weight loss
+                   - {{ $tdee }} for maintenance
+                   - {{ $tdee + 500 }} for weight gain
+                
+                WHY 500 CALORIES:
+                - Standard recommendation for safe weight change
+                - Not too aggressive (prevents muscle loss/gain)
+                - Sustainable long-term approach
+            --}}
             <div class="glass-card p-4">
                 <h2 class="h6 mb-3"><i class="bi bi-lightbulb"></i> Weight Goal Recommendations</h2>
                 <div class="row g-3">
+                    {{-- WEIGHT LOSS RECOMMENDATION: TDEE - 500 calories --}}
                     <div class="col-md-4">
                         <div class="p-3 bg-dark rounded">
                             <div class="h6 text-warning mb-2">Weight Loss</div>
@@ -60,10 +87,12 @@
                                 Subtract <strong>500 calories</strong> from your maintenance calories for safe weight loss (~0.5 kg/week).
                             </div>
                             <div class="mt-2">
+                                {{-- Calculate: TDEE - 500 --}}
                                 <strong class="text-warning">{{ number_format($tdee - 500, 0) }} cal/day</strong>
                             </div>
                         </div>
                     </div>
+                    {{-- MAINTENANCE: Use TDEE directly --}}
                     <div class="col-md-4">
                         <div class="p-3 bg-dark rounded border border-success">
                             <div class="h6 text-success mb-2">Maintenance</div>
@@ -71,10 +100,12 @@
                                 Maintain your current weight by eating at your maintenance calories.
                             </div>
                             <div class="mt-2">
+                                {{-- Use TDEE as-is (no calculation needed) --}}
                                 <strong class="text-success">{{ number_format($tdee, 0) }} cal/day</strong>
                             </div>
                         </div>
                     </div>
+                    {{-- WEIGHT GAIN RECOMMENDATION: TDEE + 500 calories --}}
                     <div class="col-md-4">
                         <div class="p-3 bg-dark rounded">
                             <div class="h6 text-info mb-2">Weight Gain</div>
@@ -82,6 +113,7 @@
                                 Add <strong>500 calories</strong> to your maintenance calories for healthy weight gain (~0.5 kg/week).
                             </div>
                             <div class="mt-2">
+                                {{-- Calculate: TDEE + 500 --}}
                                 <strong class="text-info">{{ number_format($tdee + 500, 0) }} cal/day</strong>
                             </div>
                         </div>

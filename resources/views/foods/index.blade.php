@@ -15,28 +15,54 @@
         </div>
     </div>
 
+    {{-- 
+        SORTING FORM IMPLEMENTATION:
+        ============================
+        
+        HOW SORTING WORKS:
+        1. User selects sort column (name, calories_per_100g, protein) from dropdown
+        2. User selects direction (ascending or descending) from dropdown
+        3. User clicks "Apply" button
+        4. Form submits as GET request: /foods?sort=name&direction=asc
+        5. Controller reads these parameters and applies sorting to query
+        6. Form fields are pre-filled with current values to maintain state
+        
+        SORTING FIELDS:
+        - name="sort": Sends sort column to controller (whitelisted in controller)
+        - name="direction": Sends sort direction (asc/desc) to controller
+        
+        @selected DIRECTIVE:
+        - Maintains selected state after form submission
+        - Compares current $filters value with option value
+        - Example: If ?sort=protein, the "Protein" option stays selected
+    --}}
     <div class="glass-card p-3 mb-3">
         <form class="row g-2 align-items-end" method="GET">
             <div class="col-md-4">
                 <label class="form-label text-secondary">Search</label>
                 <input type="text" name="search" class="form-control" value="{{ $filters['search'] ?? '' }}" placeholder="Chicken, rice...">
             </div>
+            {{-- SORT COLUMN SELECTION: User chooses which column to sort by --}}
             <div class="col-md-3">
                 <label class="form-label text-secondary">Sort by</label>
                 <select name="sort" class="form-select">
+                    {{-- These values must match the whitelist in FoodController --}}
                     <option value="name" @selected(($filters['sort'] ?? '') === 'name')>Name</option>
                     <option value="calories_per_100g" @selected(($filters['sort'] ?? '') === 'calories_per_100g')>Calories</option>
                     <option value="protein" @selected(($filters['sort'] ?? '') === 'protein')>Protein</option>
                 </select>
             </div>
+            {{-- SORT DIRECTION SELECTION: User chooses ascending or descending --}}
             <div class="col-md-2">
                 <label class="form-label text-secondary">Direction</label>
                 <select name="direction" class="form-select">
+                    {{-- Default to 'asc' if direction is not 'desc' --}}
                     <option value="asc" @selected(($filters['direction'] ?? '') !== 'desc')>Ascending</option>
                     <option value="desc" @selected(($filters['direction'] ?? '') === 'desc')>Descending</option>
                 </select>
             </div>
             <div class="col-md-3">
+                {{-- Submit button sends sort and direction as GET parameters --}}
                 <button class="btn btn-outline-light w-100 glass-card"><i class="bi bi-funnel"></i> Apply</button>
             </div>
         </form>
@@ -86,6 +112,18 @@
                 </tbody>
             </table>
         </div>
+        {{-- 
+            PAGINATION WITH SORTING:
+            =======================
+            
+            Laravel pagination automatically preserves query string when using
+            ->withQueryString() in the controller.
+            
+            This means when you click page 2, your sort settings are maintained:
+            /foods?search=chicken&sort=protein&direction=desc&page=2
+            
+            Without withQueryString(), pagination would lose the sort parameters.
+        --}}
         <div class="p-3">
             {{ $foods->links('pagination::bootstrap-5') }}
         </div>

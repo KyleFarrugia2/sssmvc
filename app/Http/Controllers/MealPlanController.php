@@ -10,23 +10,51 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
+/**
+ * MealPlanController
+ * 
+ * Handles meal plan CRUD operations.
+ * Implements advanced filtering: title search, client search (relationship), date range.
+ */
 class MealPlanController extends Controller
 {
+    // Display meal plans with filtering and sorting
+    // Filters: title search, client name (relationship), date range (from/to)
     public function index(Request $request)
     {
         $filters = $request->only(['search', 'client', 'from', 'to', 'sort', 'direction']);
-        $sort = in_array($filters['sort'] ?? null, ['planned_on', 'title'], true) ? $filters['sort'] : 'planned_on';
+        
+        // Extract sort parameter from GET request (?sort=planned_on or ?sort=title)
+        // Whitelist validation: Only 'planned_on' and 'title' are allowed
+        // Prevents SQL injection by restricting to safe columns
+        // Default to 'planned_on' (date) if invalid/missing
+        $sort = in_array($filters['sort'] ?? null, ['planned_on', 'title'], true) 
+            ? $filters['sort'] 
+            : 'planned_on';  // Default: sort by date (newest first)
+        
+        // Extract direction from GET request (?direction=asc or ?direction=desc)
+        // Validate: Only 'asc' or 'desc' allowed
+        // Default to 'desc' (newest first for dates, Z-A for titles)
         $direction = ($filters['direction'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
 
-        $plans = MealPlan::with(['user', 'entries.food'])
-            ->when($filters['search'] ?? null, fn ($query, $term) => $query->where('title', 'like', "%{$term}%"))
-            ->when($filters['client'] ?? null, fn ($query, $client) => $query->whereHas('user', function ($q) use ($client) {
-                $q->where('name', 'like', "%{$client}%");
-            }))
-            ->when($filters['from'] ?? null, fn ($query, $from) => $query->whereDate('planned_on', '>=', $from))
-            ->when($filters['to'] ?? null, fn ($query, $to) => $query->whereDate('planned_on', '<=', $to))
+        $plans = MealPlan::with(['user', 'entries.food']) // Eager load to prevent N+1 queries
+            ->when($filters['search'] ?? null, fn ($query, $term) => 
+                $query->where('title', 'like', "%{$term}%"))
+            ->when($filters['client'] ?? null, fn ($query, $client) => 
+                $query->whereHas('user', function ($q) use ($client) {
+                    $q->where('name', 'like', "%{$client}%");
+                }))
+            ->when($filters['from'] ?? null, fn ($query, $from) => 
+                $query->whereDate('planned_on', '>=', $from))
+            ->when($filters['to'] ?? null, fn ($query, $to) => 
+                $query->whereDate('planned_on', '<=', $to))
+            // Use validated sort column and direction
+            // orderBy() is called AFTER all filters, so sorting applies to filtered results
+            // This means: filter first, then sort the filtered results
             ->orderBy($sort, $direction)
             ->paginate(6)
+            // withQueryString() preserves ?sort=...&direction=... in pagination links
+            // This ensures sorting persists when navigating between pages
             ->withQueryString();
 
         return view('meal_plans.index', [

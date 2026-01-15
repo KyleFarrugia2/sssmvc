@@ -49,6 +49,7 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    // User has many meal plans (used in filtering by client name)
     public function mealPlans()
     {
         return $this->hasMany(MealPlan::class);

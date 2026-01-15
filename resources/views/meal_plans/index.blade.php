@@ -22,6 +22,24 @@
         </div>
     </div>
 
+    {{-- 
+        SORTING FORM IMPLEMENTATION:
+        ============================
+        
+        HOW SORTING WORKS:
+        1. User selects sort column (planned_on/date or title) from dropdown
+        2. User selects direction (ascending or descending) from dropdown
+        3. User clicks "Apply" button
+        4. Form submits as GET: /meal-plans?sort=planned_on&direction=desc
+        5. Controller validates and applies sorting to Eloquent query
+        6. Results are displayed sorted, and form maintains selected values
+        
+        SORTING FIELDS:
+        - name="sort": Column to sort by (must match controller whitelist)
+        - name="direction": Sort direction (asc or desc)
+        
+        Sorting is applied AFTER all filters, so it sorts the filtered results
+    --}}
     <div class="glass-card p-3 mb-3">
         <form class="row g-2 align-items-end" method="GET">
             <div class="col-md-3">
@@ -40,21 +58,26 @@
                 <label class="form-label text-secondary">To</label>
                 <input type="date" name="to" class="form-control" value="{{ $filters['to'] ?? '' }}">
             </div>
+            {{-- SORT COLUMN: User selects which column to sort by --}}
             <div class="col-md-2">
                 <label class="form-label text-secondary">Sort</label>
                 <select name="sort" class="form-select">
+                    {{-- Values must match whitelist in MealPlanController --}}
                     <option value="planned_on" @selected(($filters['sort'] ?? '') === 'planned_on')>Date</option>
                     <option value="title" @selected(($filters['sort'] ?? '') === 'title')>Title</option>
                 </select>
             </div>
+            {{-- SORT DIRECTION: User selects ascending or descending --}}
             <div class="col-md-1">
                 <label class="form-label text-secondary">Dir</label>
                 <select name="direction" class="form-select">
+                    {{-- Default to 'desc' (newest first for dates) --}}
                     <option value="desc" @selected(($filters['direction'] ?? '') !== 'asc')>Desc</option>
                     <option value="asc" @selected(($filters['direction'] ?? '') === 'asc')>Asc</option>
                 </select>
             </div>
             <div class="col-md-12 col-lg-2 d-grid gap-2">
+                {{-- Submit sends all form values (including sort/direction) as GET parameters --}}
                 <button class="btn btn-outline-light mt-3 mt-lg-0 glass-card"><i class="bi bi-funnel"></i> Apply</button>
                 @if(request()->hasAny(['search', 'client', 'from', 'to']))
                     <a href="{{ route('meal-plans.index') }}" class="btn btn-outline-secondary mt-lg-0 glass-card"><i class="bi bi-x-circle"></i> Clear</a>

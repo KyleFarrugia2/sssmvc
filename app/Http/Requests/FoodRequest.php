@@ -26,10 +26,6 @@ class FoodRequest extends FormRequest
                 Rule::unique('foods', 'name')->ignore($foodId),
                 new OpenFoodFactsExists(app(OpenFoodFactsClient::class)),
             ],
-            'calories_per_100g' => ['required', 'integer', 'min:0', 'max:1500'],
-            'protein' => ['required', 'numeric', 'min:0', 'max:200'],
-            'carbs' => ['required', 'numeric', 'min:0', 'max:300'],
-            'fat' => ['required', 'numeric', 'min:0', 'max:200'],
         ];
     }
 }
